@@ -33,12 +33,12 @@ export default function Sidebar({ projects = [] }) {
     >
       {/* Logo */}
       <div className="flex items-center gap-3 px-4 py-5 border-b border-gray-800">
-        <div className="flex-shrink-0 w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-          <Brain className="h-5 w-5 text-white" />
+        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+          <img src="/logo.png" alt="VedaSphere" className="w-full h-full object-contain" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <p className="text-sm font-semibold text-white truncate">AI Knowledge</p>
+            <p className="text-sm font-semibold text-white truncate">VedaSphere</p>
             <p className="text-xs text-gray-500 truncate">Assistant</p>
           </div>
         )}

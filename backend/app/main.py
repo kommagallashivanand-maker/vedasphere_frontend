@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Project-Isolated AI Knowledge Assistant",
+    title="Project-Isolated VedaSphere",
     description="Enterprise RAG system with per-project document isolation",
     version="1.0.0",
     lifespan=lifespan,
@@ -74,4 +74,4 @@ app.include_router(groups.router)
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "service": "AI Knowledge Assistant"}
+    return {"status": "ok", "service": "VedaSphere"}

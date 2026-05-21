@@ -45,8 +45,8 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-primary-600 rounded-2xl mb-4 shadow-lg shadow-primary-600/30">
-            <Brain className="h-8 w-8 text-white" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4">
+            <img src="/logo.png" alt="VedaSphere" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-white">Create your account</h1>
           <p className="text-gray-400 mt-1 text-sm">Fill in your details so admins know who you are</p>

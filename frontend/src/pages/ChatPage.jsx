@@ -7,7 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import TypingAnimation from '../components/TypingAnimation'
 import {
   ArrowLeft, Send, Bot, User, ChevronDown, ChevronUp,
-  FileText, Sparkles, FolderOpen, MessageSquare, AlertCircle
+  FileText, Sparkles, FolderOpen, MessageSquare, AlertCircle, Copy, Check
 } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -320,7 +320,19 @@ export default function ChatPage() {
 
 function ChatMessage({ message, onTypingComplete }) {
   const [showSources, setShowSources] = useState(false)
+  const [copied, setCopied] = useState(false)
   const isUser = message.role === 'user'
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content)
+      setCopied(true)
+      toast.success('Response copied to clipboard!')
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      toast.error('Failed to copy response')
+    }
+  }
 
   return (
     <div className={`flex gap-4 w-full animate-fadeIn ${isUser ? 'flex-row-reverse' : ''}`}>
@@ -346,7 +358,7 @@ function ChatMessage({ message, onTypingComplete }) {
       <div className={`flex-1 max-w-3xl ${isUser ? 'flex flex-col items-end' : ''}`}>
         {/* Message bubble */}
         <div className={`group relative ${isUser ? 'max-w-2xl' : ''}`}>
-          <div className={`px-6 py-4 text-sm leading-relaxed shadow-lg ${
+          <div className={`px-6 py-4 text-sm leading-relaxed shadow-lg relative ${
             isUser
               ? 'bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-3xl rounded-tr-md'
               : message.isError
@@ -364,6 +376,21 @@ function ChatMessage({ message, onTypingComplete }) {
                 message.content
               )}
             </div>
+
+            {/* Copy button - only for assistant messages */}
+            {!isUser && !message.isError && !message.isTyping && (
+              <button
+                onClick={handleCopy}
+                className="absolute top-2 right-2 p-2 rounded-lg bg-gray-700/0 hover:bg-gray-700/50 text-gray-400 hover:text-gray-200 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                title="Copy response"
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-green-400" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </button>
+            )}
           </div>
 
           {/* Timestamp */}

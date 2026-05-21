@@ -11,8 +11,8 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
-    # AI Provider
-    AI_PROVIDER: Literal["openai", "gemini"] = "openai"
+    # AI Provider keys — whichever key is set determines the active provider.
+    # If both are set, OpenAI takes priority.
     OPENAI_API_KEY: str = ""
     GOOGLE_API_KEY: str = ""
 
@@ -27,6 +27,17 @@ class Settings(BaseSettings):
     ADMIN_EMAIL: str = "admin@example.com"
     ADMIN_PASSWORD: str = "changeme-admin-password"
     ADMIN_NAME: str = "Admin"
+
+    @property
+    def AI_PROVIDER(self) -> str:
+        """Auto-detect provider from whichever API key is present. OpenAI takes priority."""
+        if self.OPENAI_API_KEY:
+            return "openai"
+        if self.GOOGLE_API_KEY:
+            return "gemini"
+        raise ValueError(
+            "No AI provider configured. Set OPENAI_API_KEY or GOOGLE_API_KEY in your .env file."
+        )
 
     class Config:
         env_file = ".env"

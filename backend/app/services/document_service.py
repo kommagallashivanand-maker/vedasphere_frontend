@@ -6,10 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.config import settings
 from app.models.document import Document
-from app.rag.document_processor import load_document, split_documents
+from app.rag.document_processor import load_document, split_documents, IMAGE_EXTENSIONS
 from app.rag.vector_store import add_documents_to_store
 
-ALLOWED_EXTENSIONS = {".pdf", ".docx", ".doc", ".txt"}
+ALLOWED_EXTENSIONS = {".pdf", ".docx", ".doc", ".txt"} | IMAGE_EXTENSIONS
 
 MAX_FILE_SIZE = settings.MAX_FILE_SIZE_MB * 1024 * 1024
 
@@ -20,7 +20,7 @@ async def save_upload_file(file: UploadFile, project_id: int) -> tuple[str, int]
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"File type '{ext}' not supported. Allowed: PDF, DOCX, TXT",
+            detail=f"File type '{ext}' not supported. Allowed: PDF, DOCX, DOC, TXT, PNG, JPG, JPEG, GIF, BMP, TIFF, WEBP",
         )
 
     project_dir = Path(settings.UPLOAD_DIR) / f"project_{project_id}"
@@ -58,20 +58,17 @@ async def process_and_index_document(
     filename: str,
     file_size: int,
 ) -> Document:
-    """Extract text, chunk, embed, and store in ChromaDB. Save metadata to PostgreSQL."""
+    """Extract text/description, chunk, embed, and store in ChromaDB. Save metadata to PostgreSQL."""
     ext = Path(filepath).suffix.lower()
 
-    # Extract and split text
     raw_docs = load_document(filepath)
     chunks = split_documents(raw_docs)
 
     if not chunks:
-        raise HTTPException(status_code=400, detail="Could not extract text from document")
+        raise HTTPException(status_code=400, detail="Could not extract content from document")
 
-    # Store embeddings in project-isolated ChromaDB collection
     chunk_count = add_documents_to_store(project_id=project_id, documents=chunks)
 
-    # Save document metadata to PostgreSQL
     doc = Document(
         project_id=project_id,
         filename=filename,

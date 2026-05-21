@@ -8,6 +8,12 @@ const ALLOWED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
   'application/msword': 'DOC',
   'text/plain': 'TXT',
+  'image/png': 'PNG',
+  'image/jpeg': 'JPG',
+  'image/gif': 'GIF',
+  'image/bmp': 'BMP',
+  'image/webp': 'WEBP',
+  'image/tiff': 'TIFF',
 }
 
 export default function DocumentUpload({ projectId, onUploaded }) {
@@ -20,7 +26,7 @@ export default function DocumentUpload({ projectId, onUploaded }) {
 
   const handleFile = (f) => {
     if (!ALLOWED_TYPES[f.type]) {
-      toast.error('Only PDF, DOCX, and TXT files are supported')
+      toast.error('Only PDF, DOCX, TXT, and image files (PNG, JPG, GIF, BMP, WEBP, TIFF) are supported')
       return
     }
     setFile(f)
@@ -80,13 +86,13 @@ export default function DocumentUpload({ projectId, onUploaded }) {
         <input
           ref={inputRef}
           type="file"
-          accept=".pdf,.docx,.doc,.txt"
+          accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg,.gif,.bmp,.webp,.tiff,.tif"
           className="hidden"
           onChange={(e) => e.target.files[0] && handleFile(e.target.files[0])}
         />
         <Upload className="h-8 w-8 text-gray-500 mx-auto mb-3" />
         <p className="text-sm font-medium text-gray-300">Drop a file here or click to browse</p>
-        <p className="text-xs text-gray-500 mt-1">PDF, DOCX, TXT — up to 50MB</p>
+        <p className="text-xs text-gray-500 mt-1">PDF, DOCX, TXT, PNG, JPG, GIF, BMP, WEBP — up to 50MB</p>
       </div>
 
       {/* Selected file */}

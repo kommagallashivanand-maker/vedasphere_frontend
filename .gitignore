@@ -91,3 +91,6 @@ yarn-error.log*
 *.bak
 *.tmp
 *.swp
+
+# Study notes
+study.md

@@ -6,10 +6,12 @@ import { documentService } from '../services/documents'
 import Sidebar from '../components/Sidebar'
 import DocumentUpload from '../components/DocumentUpload'
 import DocumentList from '../components/DocumentList'
+import AccessManager from '../components/AccessManager'
+import GroupManager from '../components/GroupManager'
 import LoadingSpinner from '../components/LoadingSpinner'
 import {
   ArrowLeft, MessageSquare, FileText, Upload, FolderOpen,
-  ChevronRight, Layers, Calendar
+  ChevronRight, Layers, Calendar, ShieldCheck, Users
 } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -124,6 +126,18 @@ export default function ProjectPage() {
                 Upload
               </TabButton>
             )}
+            {isAdmin && (
+              <TabButton active={activeTab === 'access'} onClick={() => setActiveTab('access')}>
+                <ShieldCheck className="h-4 w-4" />
+                Access
+              </TabButton>
+            )}
+            {isAdmin && (
+              <TabButton active={activeTab === 'groups'} onClick={() => setActiveTab('groups')}>
+                <Users className="h-4 w-4" />
+                Groups
+              </TabButton>
+            )}
           </div>
 
           {/* Tab content */}
@@ -147,6 +161,18 @@ export default function ProjectPage() {
                 Documents are indexed exclusively to this project. The AI will only use these documents when answering questions in this project.
               </p>
               <DocumentUpload projectId={id} onUploaded={handleDocumentUploaded} />
+            </div>
+          )}
+
+          {activeTab === 'access' && isAdmin && (
+            <div className="max-w-xl">
+              <AccessManager projectId={id} />
+            </div>
+          )}
+
+          {activeTab === 'groups' && isAdmin && (
+            <div className="max-w-xl">
+              <GroupManager />
             </div>
           )}
         </div>

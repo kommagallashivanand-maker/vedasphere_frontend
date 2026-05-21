@@ -5,6 +5,7 @@ from typing import List
 from app.database import get_db
 from app.models.user import User
 from app.models.project import Project
+from app.models.project_access import ProjectAccess
 from app.models.document import Document
 from app.models.chat import Chat
 from app.schemas.project import ProjectCreate, ProjectResponse
@@ -41,16 +42,19 @@ async def list_projects(
 ):
     """
     Admins see only their own projects.
-    Regular users see all projects (so they can access the chat).
+    Regular users see only projects they have been granted access to.
     """
     if current_user.role == "admin":
         query = select(Project).where(Project.created_by == current_user.id)
     else:
-        query = select(Project)
+        query = (
+            select(Project)
+            .join(ProjectAccess, ProjectAccess.project_id == Project.id)
+            .where(ProjectAccess.user_id == current_user.id)
+        )
 
     result = await db.execute(query.order_by(Project.created_at.desc()))
     projects = result.scalars().all()
-
     return [await _build_project_response(p, db) for p in projects]
 
 
@@ -62,18 +66,22 @@ async def get_project(
 ):
     """
     Admins can only fetch their own projects.
-    Regular users can fetch any project (needed to open chat).
+    Regular users can only fetch projects they have been granted access to.
     """
     if current_user.role == "admin":
         condition = (Project.id == project_id) & (Project.created_by == current_user.id)
+        result = await db.execute(select(Project).where(condition))
+        project = result.scalar_one_or_none()
     else:
-        condition = Project.id == project_id
+        result = await db.execute(
+            select(Project)
+            .join(ProjectAccess, ProjectAccess.project_id == Project.id)
+            .where(Project.id == project_id, ProjectAccess.user_id == current_user.id)
+        )
+        project = result.scalar_one_or_none()
 
-    result = await db.execute(select(Project).where(condition))
-    project = result.scalar_one_or_none()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
-
     return await _build_project_response(project, db)
 
 

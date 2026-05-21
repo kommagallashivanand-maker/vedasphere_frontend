@@ -5,6 +5,7 @@ from typing import List
 from app.database import get_db
 from app.models.user import User
 from app.models.project import Project
+from app.models.project_access import ProjectAccess
 from app.models.chat import Chat
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.utils.auth import get_current_user
@@ -15,18 +16,27 @@ router = APIRouter(tags=["Chat"])
 
 async def verify_project_access(project_id: int, current_user: User, db: AsyncSession) -> Project:
     """
-    Admins can only access their own projects.
-    Regular users can access any project (they chat but don't own).
+    Admins can access their own projects.
+    Regular users can only access projects they have been explicitly granted access to.
     """
     if current_user.role == "admin":
-        condition = (Project.id == project_id) & (Project.created_by == current_user.id)
+        result = await db.execute(
+            select(Project).where(
+                Project.id == project_id,
+                Project.created_by == current_user.id,
+            )
+        )
+        project = result.scalar_one_or_none()
     else:
-        condition = Project.id == project_id
+        result = await db.execute(
+            select(Project)
+            .join(ProjectAccess, ProjectAccess.project_id == Project.id)
+            .where(Project.id == project_id, ProjectAccess.user_id == current_user.id)
+        )
+        project = result.scalar_one_or_none()
 
-    result = await db.execute(select(Project).where(condition))
-    project = result.scalar_one_or_none()
     if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=403, detail="You don't have access to this project")
     return project
 
 

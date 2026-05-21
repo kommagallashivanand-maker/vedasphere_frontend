@@ -8,6 +8,10 @@ class UserCreate(BaseModel):
     name: str
     email: EmailStr
     password: str
+    job_title: Optional[str] = None
+    department: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
 
 
 class UserLogin(BaseModel):
@@ -20,6 +24,10 @@ class UserResponse(BaseModel):
     name: str
     email: str
     role: UserRole
+    job_title: Optional[str] = None
+    department: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
     created_at: datetime
 
     class Config:

@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "./uploads"
     MAX_FILE_SIZE_MB: int = 50
 
+    # Admin seed account
+    ADMIN_EMAIL: str = "admin@example.com"
+    ADMIN_PASSWORD: str = "changeme-admin-password"
+    ADMIN_NAME: str = "Admin"
+
     class Config:
         env_file = ".env"
 

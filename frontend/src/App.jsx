@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -20,6 +20,25 @@ function PublicRoute({ children }) {
   return user ? <Navigate to="/dashboard" replace /> : children
 }
 
+/** Blocks non-admin users from accessing a route. */
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <LoadingSpinner fullScreen />
+  if (!user) return <Navigate to="/login" replace />
+  if (user.role !== 'admin') return <Navigate to="/dashboard" replace />
+  return children
+}
+
+/** Redirects regular users from project detail to chat directly. */
+function ProjectRoute() {
+  const { user, loading } = useAuth()
+  const { id } = useParams()
+  if (loading) return <LoadingSpinner fullScreen />
+  if (!user) return <Navigate to="/login" replace />
+  if (user.role !== 'admin') return <Navigate to={`/projects/${id}/chat`} replace />
+  return <ProjectPage />
+}
+
 export default function App() {
   return (
     <Routes>
@@ -27,7 +46,8 @@ export default function App() {
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
       <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-      <Route path="/projects/:id" element={<PrivateRoute><ProjectPage /></PrivateRoute>} />
+      {/* Project detail — admin only; users are redirected to chat */}
+      <Route path="/projects/:id" element={<ProjectRoute />} />
       <Route path="/projects/:id/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

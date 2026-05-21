@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { FolderOpen, FileText, MessageSquare, Trash2, ChevronRight, Calendar } from 'lucide-react'
 import { format } from 'date-fns'
 
 export default function ProjectCard({ project, onDelete }) {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [deleting, setDeleting] = useState(false)
 
   const handleDelete = async (e) => {
@@ -18,9 +21,17 @@ export default function ProjectCard({ project, onDelete }) {
     }
   }
 
+  const handleClick = () => {
+    if (isAdmin) {
+      navigate(`/projects/${project.id}`)
+    } else {
+      navigate(`/projects/${project.id}/chat`)
+    }
+  }
+
   return (
     <div
-      onClick={() => navigate(`/projects/${project.id}`)}
+      onClick={handleClick}
       className="card cursor-pointer hover:border-primary-600/50 hover:bg-gray-800/50 transition-all duration-200 group relative"
     >
       {/* Header */}
@@ -42,7 +53,9 @@ export default function ProjectCard({ project, onDelete }) {
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 transition-all p-1 rounded"
+          className={`text-gray-600 hover:text-red-400 transition-all p-1 rounded ${
+            isAdmin ? 'opacity-0 group-hover:opacity-100' : 'hidden'
+          }`}
         >
           <Trash2 className="h-4 w-4" />
         </button>

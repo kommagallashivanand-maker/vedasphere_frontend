@@ -14,9 +14,16 @@ router = APIRouter(tags=["Chat"])
 
 
 async def verify_project_access(project_id: int, current_user: User, db: AsyncSession) -> Project:
-    result = await db.execute(
-        select(Project).where(Project.id == project_id, Project.created_by == current_user.id)
-    )
+    """
+    Admins can only access their own projects.
+    Regular users can access any project (they chat but don't own).
+    """
+    if current_user.role == "admin":
+        condition = (Project.id == project_id) & (Project.created_by == current_user.id)
+    else:
+        condition = Project.id == project_id
+
+    result = await db.execute(select(Project).where(condition))
     project = result.scalar_one_or_none()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")

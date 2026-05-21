@@ -87,7 +87,11 @@ export default function Sidebar({ projects = [] }) {
           {!collapsed && (
             <div className="flex-1 overflow-hidden">
               <p className="text-sm font-medium text-gray-200 truncate">{user?.name}</p>
-              <p className="text-xs text-gray-500 truncate capitalize">{user?.role}</p>
+              <p className={`text-xs truncate capitalize font-medium ${
+                user?.role === 'admin' ? 'text-primary-400' : 'text-gray-500'
+              }`}>
+                {user?.role === 'admin' ? '⚡ Admin' : 'User'}
+              </p>
             </div>
           )}
           {!collapsed && (

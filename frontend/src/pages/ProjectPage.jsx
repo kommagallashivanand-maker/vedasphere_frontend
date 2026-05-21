@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { projectService } from '../services/projects'
 import { documentService } from '../services/documents'
 import Sidebar from '../components/Sidebar'
@@ -16,6 +17,8 @@ import toast from 'react-hot-toast'
 export default function ProjectPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [project, setProject] = useState(null)
   const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -115,10 +118,12 @@ export default function ProjectPage() {
               <FileText className="h-4 w-4" />
               Documents ({documents.length})
             </TabButton>
-            <TabButton active={activeTab === 'upload'} onClick={() => setActiveTab('upload')}>
-              <Upload className="h-4 w-4" />
-              Upload
-            </TabButton>
+            {isAdmin && (
+              <TabButton active={activeTab === 'upload'} onClick={() => setActiveTab('upload')}>
+                <Upload className="h-4 w-4" />
+                Upload
+              </TabButton>
+            )}
           </div>
 
           {/* Tab content */}
@@ -132,7 +137,7 @@ export default function ProjectPage() {
             </div>
           )}
 
-          {activeTab === 'upload' && (
+          {activeTab === 'upload' && isAdmin && (
             <div className="card max-w-xl">
               <h2 className="text-base font-semibold text-gray-200 mb-4 flex items-center gap-2">
                 <Upload className="h-4 w-4 text-primary-400" />

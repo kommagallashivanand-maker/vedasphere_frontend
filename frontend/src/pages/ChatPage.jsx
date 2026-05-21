@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { projectService } from '../services/projects'
 import { chatService } from '../services/chat'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -13,6 +14,8 @@ import toast from 'react-hot-toast'
 export default function ChatPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'admin'
   const [project, setProject] = useState(null)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -44,7 +47,7 @@ export default function ChatPage() {
       setMessages(msgs)
     } catch {
       toast.error('Failed to load chat')
-      navigate(`/projects/${id}`)
+      navigate(isAdmin ? `/projects/${id}` : '/dashboard')
     } finally {
       setLoading(false)
     }
@@ -105,11 +108,11 @@ export default function ChatPage() {
       <aside className="w-64 flex-shrink-0 bg-gray-900 border-r border-gray-800 flex flex-col">
         <div className="p-4 border-b border-gray-800">
           <button
-            onClick={() => navigate(`/projects/${id}`)}
+            onClick={() => navigate(isAdmin ? `/projects/${id}` : '/dashboard')}
             className="flex items-center gap-2 text-gray-400 hover:text-gray-200 transition-colors text-sm mb-3"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Project
+            {isAdmin ? 'Back to Project' : 'Back to Dashboard'}
           </button>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary-600/20 rounded-lg flex items-center justify-center">
@@ -135,13 +138,15 @@ export default function ChatPage() {
             <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
               Quick Actions
             </p>
-            <Link
-              to={`/projects/${id}`}
-              className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-              Manage Documents
-            </Link>
+            {isAdmin && (
+              <Link
+                to={`/projects/${id}`}
+                className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 py-2 px-3 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+                Manage Documents
+              </Link>
+            )}
           </div>
         </div>
       </aside>

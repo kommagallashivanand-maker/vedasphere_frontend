@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.user import UserCreate, UserLogin, Token, UserResponse
 from app.utils.auth import hash_password, verify_password, create_access_token, get_current_user
 
@@ -18,11 +18,12 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
             detail="Email already registered",
         )
 
+    # Role is always 'user' on self-registration — admin is seeded via env
     user = User(
         name=user_data.name,
         email=user_data.email,
         password_hash=hash_password(user_data.password),
-        role=user_data.role,
+        role=UserRole.user,
     )
     db.add(user)
     await db.commit()

@@ -1,4 +1,4 @@
-# Project-Isolated AI Knowledge Assistant
+# Project-Isolated VedaSphere
 
 An enterprise-grade RAG (Retrieval-Augmented Generation) system where each project has completely isolated documents, vector embeddings, and chat history.
 

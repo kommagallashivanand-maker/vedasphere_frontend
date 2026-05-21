@@ -41,6 +41,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"  # Ignore unknown environment variables
 
 
 settings = Settings()

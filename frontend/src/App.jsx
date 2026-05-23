@@ -39,7 +39,7 @@ function ProjectRoute() {
   if (user.role !== 'admin') return <Navigate to={`/projects/${id}/chat`} replace />
   return <ProjectPage />
 }
-//added2345
+//added23457
 export default function App() {
   return (
     <Routes>

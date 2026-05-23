@@ -39,7 +39,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Generate image tags: sha-<short-commit> + "latest" on main/master
       - name: Extract Docker metadata
@@ -87,7 +87,7 @@ jobs:
             set -e
 
             echo "==> Logging in to Docker Hub..."
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
             echo "==> Pulling latest frontend image..."
             docker pull ${{ env.IMAGE_NAME }}:latest

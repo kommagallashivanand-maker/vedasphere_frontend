@@ -1,4 +1,3 @@
-import React from 'react'
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
@@ -7,6 +6,7 @@ import DashboardPage from './pages/DashboardPage'
 import ProjectPage from './pages/ProjectPage'
 import ChatPage from './pages/ChatPage'
 import GitHubCallback from './pages/GitHubCallback'
+import GroupsPage from './pages/GroupsPage'
 import LoadingSpinner from './components/LoadingSpinner'
 
 function PrivateRoute({ children }) {
@@ -39,7 +39,6 @@ function ProjectRoute() {
   if (user.role !== 'admin') return <Navigate to={`/projects/${id}/chat`} replace />
   return <ProjectPage />
 }
-//added23457
 export default function App() {
   return (
     <Routes>

@@ -49,6 +49,7 @@ export default function App() {
       <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
       <Route path="/github/callback" element={<PrivateRoute><GitHubCallback /></PrivateRoute>} />
       {/* Project detail — admin only; users are redirected to chat */}
+      <Route path="/groups" element={<AdminRoute><GroupsPage /></AdminRoute>} />
       <Route path="/projects/:id" element={<ProjectRoute />} />
       <Route path="/projects/:id/chat" element={<PrivateRoute><ChatPage /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

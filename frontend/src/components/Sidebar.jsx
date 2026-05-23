@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Brain,
   User,
+  Users,
 } from 'lucide-react'
 import ConfirmDialog from './ConfirmDialog'
 
@@ -69,6 +70,15 @@ export default function Sidebar({ projects = [] }) {
             collapsed={collapsed}
             active={location.pathname === '/dashboard'}
           />
+          {user?.role === 'admin' && (
+            <NavItem
+              to="/groups"
+              icon={<Users className="h-5 w-5" />}
+              label="Groups"
+              collapsed={collapsed}
+              active={location.pathname === '/groups'}
+            />
+          )}
         </div>
 
         {projects.length > 0 && !collapsed && (

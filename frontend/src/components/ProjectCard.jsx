@@ -72,21 +72,31 @@ export default function ProjectCard({ project, onDelete }) {
           <p className="text-sm text-gray-400 mb-4 line-clamp-2">{project.description}</p>
         )}
 
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <FileText className="h-4 w-4" />
-            <span>{project.document_count} docs</span>
+        {/* Stats — admin only, users don't need to see internal counts */}
+        {isAdmin && (
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <FileText className="h-4 w-4" />
+              <span>{project.document_count} docs</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <MessageSquare className="h-4 w-4" />
+              <span>{project.chat_count} chats</span>
+            </div>
+            <div className="ml-auto flex items-center gap-1 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-xs">Open</span>
+              <ChevronRight className="h-3 w-3" />
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <MessageSquare className="h-4 w-4" />
-            <span>{project.chat_count} chats</span>
+        )}
+        {!isAdmin && (
+          <div className="flex justify-end">
+            <div className="flex items-center gap-1 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity">
+              <span className="text-xs">Open Chat</span>
+              <ChevronRight className="h-3 w-3" />
+            </div>
           </div>
-          <div className="ml-auto flex items-center gap-1 text-primary-400 opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-xs">Open</span>
-            <ChevronRight className="h-3 w-3" />
-          </div>
-        </div>
+        )}
       </div>
 
       <ConfirmDialog
